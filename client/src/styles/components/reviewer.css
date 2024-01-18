@@ -1,0 +1,115 @@
+.reviewer_content {
+	min-height: calc(100vh - 4rem);
+	padding: 2rem;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+
+.reviewer_content h1 {
+	margin-bottom: 2rem;
+	font-size: 2.5rem;
+	font-weight: 600;
+}
+
+.reviewer_content .fields {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.reviewer_content .fields .field {
+	display: flex;
+	flex-direction: column;
+}
+
+.reviewer_content .fields .field label {
+	margin-bottom: 0.5rem;
+	font-size: 1rem;
+	font-weight: 600;
+	text-align: center;
+}
+
+.reviewer_content .fields .field select,
+.reviewer_content .fields .field input {
+	width: 250px;
+	height: 2.5rem;
+	padding: 0 0.5rem;
+	background-color: #ffffff;
+	border: 1px solid #dddddd;
+	border-radius: 0.25rem;
+	font-size: 1rem;
+	text-align: center;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+
+.reviewer_content .fields .field select:focus {
+	outline: none;
+}
+
+.reviewer_content .fields .field select::-ms-expand {
+	display: none;
+}
+
+.reviewer_content .fields button {
+	height: 2.5rem;
+	background-color: #222222;
+	border-radius: 0.25rem;
+	color: #ffffff;
+	font-size: 0.875rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background-color 100ms ease-in-out;
+}
+
+.reviewer_content .fields button:hover {
+	background-color: #444444;
+}
+
+.reviewer_content .articles {
+	width: 250px;
+	margin-top: 2rem;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.reviewer_content .articles h2 {
+	font-size: 1.5rem;
+	font-weight: 600;
+}
+
+.reviewer_content .articles .article {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.reviewer_content .articles .article .name {
+	width: 250px;
+	height: 2.5rem;
+	padding: 0 0.5rem;
+	background-color: #ffffff;
+	border: 1px solid #dddddd;
+	border-radius: 0.25rem;
+	font-size: 1rem;
+	font-weight: 500;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.reviewer_content .articles .article button {
+	height: 2.5rem;
+	background-color: #222222;
+	border-radius: 0.25rem;
+	color: #ffffff;
+	font-size: 0.875rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background-color 100ms ease-in-out;
+}
