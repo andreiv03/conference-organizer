@@ -14,7 +14,7 @@ const Organizer = () => {
 	useEffect(() => {
 		const getOrganizers = async () => {
 			try {
-				const response = await fetch("http://localhost:8000/api/get-organizers");
+				const response = await fetch("http://localhost:8000/api/users/organizer");
 				const organizers = await response.json();
 				setOrganizers(organizers);
 			} catch (error) {
@@ -24,7 +24,7 @@ const Organizer = () => {
 
 		const getReviewers = async () => {
 			try {
-				const response = await fetch("http://localhost:8000/api/get-reviewers");
+				const response = await fetch("http://localhost:8000/api/users/reviewer");
 				const reviewers = await response.json();
 				setReviewers(reviewers);
 			} catch (error) {
@@ -34,7 +34,7 @@ const Organizer = () => {
 
 		const getArticles = async () => {
 			try {
-				const response = await fetch("http://localhost:8000/api/get-articles");
+				const response = await fetch("http://localhost:8000/api/articles");
 				const articles = await response.json();
 				setArticles(articles);
 			} catch (error) {
@@ -62,14 +62,14 @@ const Organizer = () => {
 			if (!conferenceName) return alert("Enter a conference name!");
 			if (selectedReviewers.length < 2) return alert("Select at least two reviewers!");
 
-			const response = await fetch("http://localhost:8000/api/create-conference", {
+			const response = await fetch("http://localhost:8000/api/conferences/create", {
 				body: JSON.stringify({
 					organizerId: selectedOrganizer,
 					conferenceName: conferenceName,
-					reviewers: selectedReviewers
+					reviewers: selectedReviewers,
 				}),
 				headers: { "Content-Type": "application/json" },
-				method: "POST"
+				method: "POST",
 			});
 
 			setSelectedOrganizer("");
@@ -95,10 +95,7 @@ const Organizer = () => {
 					>
 						<option value="">Select an organizer</option>
 						{organizers.map((organizer) => (
-							<option
-								key={organizer.id}
-								value={organizer.id}
-							>
+							<option key={organizer.id} value={organizer.id}>
 								{organizer.name}
 							</option>
 						))}
@@ -137,10 +134,7 @@ const Organizer = () => {
 				{articles.length > 0 ? <h2>Articles</h2> : null}
 
 				{articles.map((article) => (
-					<div
-						className="article"
-						key={article.id}
-					>
+					<div className="article" key={article.id}>
 						<h3 className="name">{article.articleName}</h3>
 						<div className="status">Status: {article.status}</div>
 					</div>

@@ -13,7 +13,7 @@ const Reviewer = () => {
 	useEffect(() => {
 		const getReviewers = async () => {
 			try {
-				const response = await fetch("http://localhost:8000/api/get-reviewers");
+				const response = await fetch("http://localhost:8000/api/users/reviewer");
 				const reviewers = await response.json();
 				setReviewers(reviewers);
 			} catch (error) {
@@ -29,15 +29,15 @@ const Reviewer = () => {
 
 		const getReviewerArticles = async () => {
 			try {
-				const response = await fetch("http://localhost:8000/api/get-articles");
+				const response = await fetch("http://localhost:8000/api/articles");
 				const articles = await response.json();
 				setReviewerArticles(
 					articles.filter(
 						(article) =>
 							(article.reviewerOne == selectedReviewer ||
 								article.reviewerTwo == selectedReviewer) &&
-							article.status === "PENDING"
-					)
+							article.status === "PENDING",
+					),
 				);
 			} catch (error) {
 				console.error(error);
@@ -49,10 +49,10 @@ const Reviewer = () => {
 
 	const approveArticle = async (id) => {
 		try {
-			const response = await fetch("http://localhost:8000/api/approve-article", {
+			const response = await fetch("http://localhost:8000/api/articles/approve", {
 				body: JSON.stringify({ id }),
 				headers: { "Content-Type": "application/json" },
-				method: "PUT"
+				method: "PUT",
 			});
 
 			alert(await response.text());
@@ -65,15 +65,15 @@ const Reviewer = () => {
 		try {
 			if (!feedback) return alert("Enter feedback!");
 
-			const response = await fetch("http://localhost:8000/api/submit-feedback", {
+			const response = await fetch("http://localhost:8000/api/feedback/submit", {
 				body: JSON.stringify({
 					articleId: selectedReviewerArticle,
 					authorId: reviewerArticles.find((article) => article.id == selectedReviewerArticle)
 						.authorId,
-					feedback
+					feedback,
 				}),
 				headers: { "Content-Type": "application/json" },
-				method: "POST"
+				method: "POST",
 			});
 
 			setSelectedReviewer("");
@@ -99,10 +99,7 @@ const Reviewer = () => {
 					>
 						<option value="">Select a reviewer</option>
 						{reviewers.map((reviewer) => (
-							<option
-								key={reviewer.id}
-								value={reviewer.id}
-							>
+							<option key={reviewer.id} value={reviewer.id}>
 								{reviewer.name}
 							</option>
 						))}
@@ -119,10 +116,7 @@ const Reviewer = () => {
 							>
 								<option value="">Select an article</option>
 								{reviewerArticles.map((article) => (
-									<option
-										key={article.id}
-										value={article.id}
-									>
+									<option key={article.id} value={article.id}>
 										{article.articleName}
 									</option>
 								))}
@@ -151,10 +145,7 @@ const Reviewer = () => {
 				{reviewerArticles.length > 0 ? <h2>Articles</h2> : null}
 
 				{reviewerArticles.map((article) => (
-					<div
-						className="article"
-						key={article.id}
-					>
+					<div className="article" key={article.id}>
 						<h3 className="name">{article.articleName}</h3>
 						<button onClick={() => approveArticle(article.id)}>Approve</button>
 					</div>

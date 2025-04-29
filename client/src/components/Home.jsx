@@ -14,10 +14,10 @@ const Home = () => {
 		try {
 			if (!name) return alert("Enter a name!");
 
-			const response = await fetch("http://localhost:8000/api/create-user", {
+			const response = await fetch("http://localhost:8000/api/users/create", {
 				body: JSON.stringify({ type, name }),
 				headers: { "Content-Type": "application/json" },
-				method: "POST"
+				method: "POST",
 			});
 
 			if (type === "author") setAuthorName("");

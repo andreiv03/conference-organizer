@@ -16,7 +16,7 @@ const Author = () => {
 	useEffect(() => {
 		const getAuthors = async () => {
 			try {
-				const response = await fetch("http://localhost:8000/api/get-authors");
+				const response = await fetch("http://localhost:8000/api/users/author");
 				const authors = await response.json();
 				setAuthors(authors);
 			} catch (error) {
@@ -26,7 +26,7 @@ const Author = () => {
 
 		const getConferences = async () => {
 			try {
-				const response = await fetch("http://localhost:8000/api/get-conferences");
+				const response = await fetch("http://localhost:8000/api/conferences");
 				const conferences = await response.json();
 				setConferences(conferences);
 			} catch (error) {
@@ -43,7 +43,7 @@ const Author = () => {
 
 		const getArticleFeedbacks = async () => {
 			try {
-				const response = await fetch("http://localhost:8000/api/get-article-feedbacks");
+				const response = await fetch("http://localhost:8000/api/articles");
 				const articles = await response.json();
 				setArticleFeedbacks(articles.filter((article) => article.authorId == selectedAuthor));
 			} catch (error) {
@@ -60,15 +60,15 @@ const Author = () => {
 			if (!selectedConference) return alert("Select a conference!");
 			if (!articleName) return alert("Enter the article name!");
 
-			const response = await fetch("http://localhost:8000/api/create-article", {
+			const response = await fetch("http://localhost:8000/api/articles/create", {
 				body: JSON.stringify({
 					authorId: selectedAuthor,
 					conferenceId: selectedConference,
 					articleName: articleName,
-					status: "PENDING"
+					status: "PENDING",
 				}),
 				headers: { "Content-Type": "application/json" },
-				method: "POST"
+				method: "POST",
 			});
 
 			setSelectedAuthor("");
@@ -86,21 +86,21 @@ const Author = () => {
 			if (!selectedArticle) return alert("Select an article!");
 			if (!articleNewName) return alert("Enter the article new name!");
 
-			const response = await fetch("http://localhost:8000/api/update-article", {
+			const response = await fetch("http://localhost:8000/api/articles/update", {
 				body: JSON.stringify({
 					id: selectedArticle,
-					articleName: articleNewName
+					articleName: articleNewName,
 				}),
 				headers: { "Content-Type": "application/json" },
-				method: "PUT"
+				method: "PUT",
 			});
 
-			await fetch("http://localhost:8000/api/delete-feedback", {
+			await fetch("http://localhost:8000/api/articles/delete", {
 				body: JSON.stringify({
-					id: selectedArticle
+					id: selectedArticle,
 				}),
 				headers: { "Content-Type": "application/json" },
-				method: "DELETE"
+				method: "DELETE",
 			});
 
 			setSelectedAuthor("");
@@ -129,10 +129,7 @@ const Author = () => {
 					>
 						<option value="">Select an author</option>
 						{authors.map((author) => (
-							<option
-								key={author.id}
-								value={author.id}
-							>
+							<option key={author.id} value={author.id}>
 								{author.name}
 							</option>
 						))}
@@ -147,10 +144,7 @@ const Author = () => {
 					>
 						<option value="">Select a conference</option>
 						{conferences.map((conference) => (
-							<option
-								key={conference.id}
-								value={conference.id}
-							>
+							<option key={conference.id} value={conference.id}>
 								{conference.name}
 							</option>
 						))}
@@ -181,10 +175,7 @@ const Author = () => {
 							>
 								<option value="">Select a feedback</option>
 								{articleFeedbacks.map((article) => (
-									<option
-										key={article.id}
-										value={article.id}
-									>
+									<option key={article.id} value={article.id}>
 										{article.feedback}
 									</option>
 								))}

@@ -1,4 +1,20 @@
 {
+	"name": "client",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"start": "react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject",
+		"lint": "eslint 'src/**/*.{js,jsx}'"
+	},
+	"dependencies": {
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"react-router-dom": "^7.2.0",
+		"react-scripts": "^5.0.1"
+	},
 	"browserslist": {
 		"production": [
 			">0.2%",
@@ -11,17 +27,8 @@
 			"last 1 safari version"
 		]
 	},
-	"dependencies": {
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"react-router-dom": "^6.21.2",
-		"react-scripts": "^5.0.1"
-	},
-	"name": "client",
-	"scripts": {
-		"start": "react-scripts start",
-		"build": "react-scripts build",
-		"test": "react-scripts test",
-		"eject": "react-scripts eject"
+	"devDependencies": {
+		"eslint": "^8.57.1",
+		"prettier": "^3.5.3"
 	}
 }

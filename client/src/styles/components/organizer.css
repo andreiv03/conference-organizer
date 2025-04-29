@@ -35,11 +35,12 @@
 	width: 250px;
 	height: 2.5rem;
 	padding: 0 0.5rem;
-	background-color: #ffffff;
-	border: 1px solid #dddddd;
+	background: var(--background-one);
+	border: 1px solid var(--border);
 	border-radius: 0.25rem;
 	font-size: 1rem;
 	text-align: center;
+	appearance: none;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 }
@@ -61,8 +62,8 @@
 .organizer_content .fields .field .reviewers .reviewer {
 	height: 2.5rem;
 	padding: 0 0.5rem;
-	background-color: #ffffff;
-	border: 1px solid #dddddd;
+	background: var(--background-one);
+	border: 1px solid var(--border);
 	border-radius: 0.25rem;
 	font-size: 1rem;
 	display: flex;
@@ -72,24 +73,24 @@
 }
 
 .organizer_content .fields .field .reviewers .reviewer.selected {
-	background-color: #222222;
-	color: #ffffff;
+	background: var(--foreground-one);
+	color: var(--background-one);
 }
 
 .organizer_content .fields button {
 	height: 2.5rem;
-	background-color: #222222;
+	background: var(--foreground-one);
 	border-radius: 0.25rem;
-	color: #ffffff;
+	color: var(--background-one);
 	font-size: 0.875rem;
 	font-weight: 500;
 	text-transform: uppercase;
 	cursor: pointer;
-	transition: background-color 100ms ease-in-out;
+	transition: background-color 100ms ease;
 }
 
 .organizer_content .fields button:hover {
-	background-color: #444444;
+	background: var(--foreground-two);
 }
 
 .organizer_content .articles {

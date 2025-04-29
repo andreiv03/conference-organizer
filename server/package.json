@@ -1,14 +1,24 @@
 {
+	"name": "server",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"start": "node index.js",
+		"dev": "nodemon index.js",
+		"lint": "eslint ."
+	},
 	"dependencies": {
 		"cors": "^2.8.5",
+		"dotenv": "^16.4.7",
 		"express": "^4.21.2",
-		"mysql": "^2.18.1"
+		"mysql2": "^3.13.0"
 	},
 	"devDependencies": {
-		"nodemon": "^3.0.3"
-	},
-	"name": "server",
-	"scripts": {
-		"start": "nodemon index.js"
+		"@eslint/js": "^9.21.0",
+		"eslint": "^9.21.0",
+		"eslint-config-prettier": "^10.0.2",
+		"globals": "^16.0.0",
+		"nodemon": "^3.0.3",
+		"prettier": "^3.5.3"
 	}
 }
