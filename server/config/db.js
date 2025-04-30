@@ -1,72 +1,31 @@
-import mysql from "mysql2/promise";
 import dotenv from "dotenv";
+import fs from "fs/promises";
+import mysql from "mysql2/promise";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
-const { DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } = process.env;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const pool = mysql.createPool({
-	host: DB_HOST,
-	port: DB_PORT,
-	user: DB_USER,
-	password: DB_PASS,
-	waitForConnections: true,
-	connectionLimit: 10,
-	queueLimit: 0,
+	host: process.env.DB_HOST,
+	port: process.env.DB_PORT,
+	user: process.env.DB_USER,
+	password: process.env.DB_PASS,
+	multipleStatements: true,
 });
 
 export const initializeDatabase = async () => {
 	try {
+		const schemaPath = path.join(__dirname, "schema.sql");
+		let sql = await fs.readFile(schemaPath, "utf8");
+		sql = sql.replace(/your_db_name/g, process.env.DB_NAME);
+
 		const connection = await pool.getConnection();
-		await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;`);
+		await connection.query(sql);
 		connection.release();
-
-		const tableQueries = [
-			`CREATE TABLE IF NOT EXISTS users (
-				id INT AUTO_INCREMENT PRIMARY KEY,
-				type VARCHAR(255) NOT NULL,
-				name VARCHAR(255) NOT NULL UNIQUE
-			)`,
-			`CREATE TABLE IF NOT EXISTS conferences (
-				id INT AUTO_INCREMENT PRIMARY KEY,
-				organizerId INT NOT NULL,
-				name VARCHAR(255) NOT NULL UNIQUE,
-				FOREIGN KEY (organizerId) REFERENCES users(id) ON DELETE CASCADE
-			)`,
-			`CREATE TABLE IF NOT EXISTS conference_reviewers (
-				conferenceId INT NOT NULL,
-				reviewerId INT NOT NULL,
-				PRIMARY KEY (conferenceId, reviewerId),
-				FOREIGN KEY (conferenceId) REFERENCES conferences(id) ON DELETE CASCADE,
-				FOREIGN KEY (reviewerId) REFERENCES users(id) ON DELETE CASCADE
-			)`,
-			`CREATE TABLE IF NOT EXISTS articles (
-				id INT AUTO_INCREMENT PRIMARY KEY,
-				authorId INT NOT NULL,
-				conferenceId INT NOT NULL,
-				articleName VARCHAR(255) NOT NULL UNIQUE,
-				status VARCHAR(255) NOT NULL DEFAULT 'Pending',
-				reviewerOne INT NOT NULL,
-				reviewerTwo INT NOT NULL,
-				FOREIGN KEY (authorId) REFERENCES users(id) ON DELETE CASCADE,
-				FOREIGN KEY (conferenceId) REFERENCES conferences(id) ON DELETE CASCADE,
-				FOREIGN KEY (reviewerOne) REFERENCES users(id) ON DELETE CASCADE,
-				FOREIGN KEY (reviewerTwo) REFERENCES users(id) ON DELETE CASCADE
-			)`,
-			`CREATE TABLE IF NOT EXISTS article_feedbacks (
-				id INT AUTO_INCREMENT PRIMARY KEY,
-				articleId INT NOT NULL,
-				authorId INT NOT NULL,
-				feedback TEXT NOT NULL,
-				FOREIGN KEY (articleId) REFERENCES articles(id) ON DELETE CASCADE,
-				FOREIGN KEY (authorId) REFERENCES users(id) ON DELETE CASCADE
-			)`,
-		];
-
-		await pool.query(`USE \`${DB_NAME}\`;`);
-		for (const query of tableQueries) {
-			await pool.query(query);
-		}
 
 		console.log("Database initialized successfully.");
 	} catch (error) {
@@ -74,9 +33,9 @@ export const initializeDatabase = async () => {
 	}
 };
 
-export const query = async (sql, params) => {
+export const query = async (sql, params = []) => {
 	try {
-		await pool.query(`USE \`${DB_NAME}\`;`);
+		await pool.query(`USE \`${process.env.DB_NAME}\`;`);
 		const [rows] = await pool.execute(sql, params);
 		return rows;
 	} catch (error) {

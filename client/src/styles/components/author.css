@@ -35,9 +35,9 @@
 	width: 250px;
 	height: 2.5rem;
 	padding: 0 0.5rem;
-	background: var(--background-one);
 	border: 1px solid var(--border);
 	border-radius: 0.25rem;
+	background-color: var(--background-one);
 	font-size: 1rem;
 	text-align: center;
 	appearance: none;
@@ -55,7 +55,7 @@
 
 .author_content .fields button {
 	height: 2.5rem;
-	background: var(--foreground-one);
+	background-color: var(--foreground-one);
 	border-radius: 0.25rem;
 	color: var(--background-one);
 	font-size: 0.875rem;
@@ -66,7 +66,7 @@
 }
 
 .author_content .fields button:hover {
-	background: var(--foreground-two);
+	background-color: var(--foreground-two);
 }
 
 .author_content .fields h2 {

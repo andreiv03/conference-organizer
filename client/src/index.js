@@ -1,15 +1,14 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 
+import Home from "./components/home.jsx";
+import Author from "./components/author.jsx";
+import Organizer from "./components/organizer.jsx";
+import Reviewer from "./components/reviewer.jsx";
 import "./styles/index.css";
-import Home from "./components/Home.jsx";
-import Author from "./components/Author.jsx";
-import Organizer from "./components/Organizer.jsx";
-import Reviewer from "./components/Reviewer.jsx";
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
+createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
 		<BrowserRouter>
 			<div className="header">
@@ -21,11 +20,8 @@ root.render(
 
 			<Routes>
 				<Route path="/" element={<Home />} />
-
 				<Route path="/author" element={<Author />} />
-
 				<Route path="/organizer" element={<Organizer />} />
-
 				<Route path="/reviewer" element={<Reviewer />} />
 			</Routes>
 		</BrowserRouter>

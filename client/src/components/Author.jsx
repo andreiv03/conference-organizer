@@ -1,116 +1,116 @@
 import { useEffect, useState } from "react";
-
-import "../styles/index.css";
 import "../styles/components/author.css";
 
-const Author = () => {
+export default function Author() {
 	const [authors, setAuthors] = useState([]);
 	const [conferences, setConferences] = useState([]);
 	const [selectedAuthor, setSelectedAuthor] = useState("");
 	const [selectedConference, setSelectedConference] = useState("");
 	const [articleName, setArticleName] = useState("");
-	const [articleFeedbacks, setArticleFeedbacks] = useState([]);
-	const [selectedArticle, setSelectedArticle] = useState("");
-	const [articleNewName, setArticleNewName] = useState("");
+	const [feedbacks, setFeedbacks] = useState([]);
+	const [selectedArticleId, setSelectedArticleId] = useState("");
+	const [newArticleName, setNewArticleName] = useState("");
 
 	useEffect(() => {
-		const getAuthors = async () => {
+		const fetchData = async () => {
 			try {
-				const response = await fetch("http://localhost:8000/api/users/author");
-				const authors = await response.json();
-				setAuthors(authors);
+				const [authorsResponse, conferencesResponse] = await Promise.all([
+					fetch("http://localhost:8000/api/users/author"),
+					fetch("http://localhost:8000/api/conferences"),
+				]);
+
+				setAuthors(await authorsResponse.json());
+				setConferences(await conferencesResponse.json());
 			} catch (error) {
 				console.error(error);
 			}
 		};
 
-		const getConferences = async () => {
-			try {
-				const response = await fetch("http://localhost:8000/api/conferences");
-				const conferences = await response.json();
-				setConferences(conferences);
-			} catch (error) {
-				console.error(error);
-			}
-		};
-
-		getAuthors();
-		getConferences();
+		fetchData();
 	}, []);
 
 	useEffect(() => {
-		if (!selectedAuthor) return setArticleFeedbacks([]);
+		if (!selectedAuthor) {
+			return setFeedbacks([]);
+		}
 
-		const getArticleFeedbacks = async () => {
+		const fetchFeedbacks = async () => {
 			try {
-				const response = await fetch("http://localhost:8000/api/articles");
-				const articles = await response.json();
-				setArticleFeedbacks(articles.filter((article) => article.authorId == selectedAuthor));
+				const response = await fetch("http://localhost:8000/api/feedback");
+				const data = await response.json();
+				setFeedbacks(data.filter((feedback) => feedback.authorId == selectedAuthor));
 			} catch (error) {
 				console.error(error);
 			}
 		};
 
-		getArticleFeedbacks();
+		fetchFeedbacks();
 	}, [selectedAuthor]);
 
 	const createArticle = async () => {
-		try {
-			if (!selectedAuthor) return alert("Select an author!");
-			if (!selectedConference) return alert("Select a conference!");
-			if (!articleName) return alert("Enter the article name!");
+		if (!selectedAuthor || !selectedConference || !articleName) {
+			return alert("Fill in all fields to create an article.");
+		}
 
+		try {
 			const response = await fetch("http://localhost:8000/api/articles/create", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					authorId: selectedAuthor,
 					conferenceId: selectedConference,
 					articleName: articleName,
 					status: "PENDING",
 				}),
-				headers: { "Content-Type": "application/json" },
-				method: "POST",
 			});
+			const data = await response.json();
 
 			setSelectedAuthor("");
 			setSelectedConference("");
 			setArticleName("");
 
-			alert(await response.text());
+			alert(data.message);
 		} catch (error) {
 			console.error(error);
 		}
 	};
 
 	const updateArticle = async () => {
+		if (!selectedArticleId) {
+			return alert("Select an article.");
+		}
+
+		if (!newArticleName) {
+			return alert("Enter the new article name.");
+		}
+
 		try {
-			if (!selectedArticle) return alert("Select an article!");
-			if (!articleNewName) return alert("Enter the article new name!");
-
 			const response = await fetch("http://localhost:8000/api/articles/update", {
-				body: JSON.stringify({
-					id: selectedArticle,
-					articleName: articleNewName,
-				}),
-				headers: { "Content-Type": "application/json" },
 				method: "PUT",
-			});
-
-			await fetch("http://localhost:8000/api/articles/delete", {
-				body: JSON.stringify({
-					id: selectedArticle,
-				}),
 				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					articleId: selectedArticleId,
+					articleName: newArticleName,
+				}),
+			});
+			const data = await response.json();
+
+			await fetch("http://localhost:8000/api/feedback/delete", {
 				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					feedbackId: selectedArticleId,
+				}),
 			});
 
 			setSelectedAuthor("");
 			setSelectedConference("");
 			setArticleName("");
-			setArticleFeedbacks([]);
-			setSelectedArticle("");
-			setArticleNewName("");
+			setFeedbacks([]);
+			setSelectedArticleId("");
+			setNewArticleName("");
 
-			alert(await response.text());
+			alert(data.message);
 		} catch (error) {
 			console.error(error);
 		}
@@ -163,18 +163,18 @@ const Author = () => {
 
 				<button onClick={createArticle}>Create article</button>
 
-				{articleFeedbacks.length > 0 ? (
+				{feedbacks.length > 0 ? (
 					<>
 						<h2>Feedbacks</h2>
 
 						<div className="field">
 							<select
 								id="articleFeedback"
-								onChange={(event) => setSelectedArticle(event.target.value)}
-								value={selectedArticle}
+								onChange={(event) => setSelectedArticleId(event.target.value)}
+								value={selectedArticleId}
 							>
 								<option value="">Select a feedback</option>
-								{articleFeedbacks.map((article) => (
+								{feedbacks.map((article) => (
 									<option key={article.id} value={article.id}>
 										{article.feedback}
 									</option>
@@ -182,15 +182,15 @@ const Author = () => {
 							</select>
 						</div>
 
-						{selectedArticle ? (
+						{selectedArticleId ? (
 							<>
 								<div className="field">
 									<label htmlFor="articleNewName">Article new name</label>
 									<input
 										id="articleNewName"
-										onChange={(event) => setArticleNewName(event.target.value)}
+										onChange={(event) => setNewArticleName(event.target.value)}
 										type="text"
-										value={articleNewName}
+										value={newArticleName}
 									/>
 								</div>
 								<button onClick={updateArticle}>Update article</button>
@@ -201,6 +201,4 @@ const Author = () => {
 			</div>
 		</div>
 	);
-};
-
-export default Author;
+}

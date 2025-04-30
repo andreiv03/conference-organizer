@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-
-import "../styles/index.css";
 import "../styles/components/organizer.css";
 
-const Organizer = () => {
+export default function Organizer() {
 	const [organizers, setOrganizers] = useState([]);
 	const [reviewers, setReviewers] = useState([]);
 	const [articles, setArticles] = useState([]);
@@ -12,71 +10,61 @@ const Organizer = () => {
 	const [selectedReviewers, setSelectedReviewers] = useState([]);
 
 	useEffect(() => {
-		const getOrganizers = async () => {
+		const fetchData = async () => {
 			try {
-				const response = await fetch("http://localhost:8000/api/users/organizer");
-				const organizers = await response.json();
-				setOrganizers(organizers);
+				const [organizersResponse, reviewersResponse, articlesResponse] = await Promise.all([
+					fetch("http://localhost:8000/api/users/organizer"),
+					fetch("http://localhost:8000/api/users/reviewer"),
+					fetch("http://localhost:8000/api/articles"),
+				]);
+
+				setOrganizers(await organizersResponse.json());
+				setReviewers(await reviewersResponse.json());
+				setArticles(await articlesResponse.json());
 			} catch (error) {
 				console.error(error);
 			}
 		};
 
-		const getReviewers = async () => {
-			try {
-				const response = await fetch("http://localhost:8000/api/users/reviewer");
-				const reviewers = await response.json();
-				setReviewers(reviewers);
-			} catch (error) {
-				console.error(error);
-			}
-		};
-
-		const getArticles = async () => {
-			try {
-				const response = await fetch("http://localhost:8000/api/articles");
-				const articles = await response.json();
-				setArticles(articles);
-			} catch (error) {
-				console.error(error);
-			}
-		};
-
-		getOrganizers();
-		getReviewers();
-		getArticles();
+		fetchData();
 	}, []);
 
-	const selectReviewer = (id) => {
-		const index = selectedReviewers.indexOf(id);
-		if (index === -1) return setSelectedReviewers([...selectedReviewers, id]);
-
-		const newSelectedReviewers = [...selectedReviewers];
-		newSelectedReviewers.splice(index, 1);
-		setSelectedReviewers(newSelectedReviewers);
+	const toggleReviewerSelection = (id) => {
+		setSelectedReviewers((prev) =>
+			prev.includes(id) ? prev.filter((reviewer) => reviewer !== id) : [...prev, id],
+		);
 	};
 
 	const createConference = async () => {
-		try {
-			if (!selectedOrganizer) return alert("Select an organizer!");
-			if (!conferenceName) return alert("Enter a conference name!");
-			if (selectedReviewers.length < 2) return alert("Select at least two reviewers!");
+		if (!selectedOrganizer) {
+			return alert("Select an organizer.");
+		}
 
+		if (!conferenceName) {
+			return alert("Enter a conference name.");
+		}
+
+		if (selectedReviewers.length < 2) {
+			return alert("Select at least two reviewers.");
+		}
+
+		try {
 			const response = await fetch("http://localhost:8000/api/conferences/create", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					organizerId: selectedOrganizer,
 					conferenceName: conferenceName,
 					reviewers: selectedReviewers,
 				}),
-				headers: { "Content-Type": "application/json" },
-				method: "POST",
 			});
+			const data = await response.json();
 
 			setSelectedOrganizer("");
 			setConferenceName("");
 			setSelectedReviewers([]);
 
-			alert(await response.text());
+			alert(data.message);
 		} catch (error) {
 			console.error(error);
 		}
@@ -119,7 +107,7 @@ const Organizer = () => {
 							<div
 								key={reviewer.id}
 								className={`reviewer ${selectedReviewers.includes(reviewer.id) ? "selected" : ""}`}
-								onClick={() => selectReviewer(reviewer.id)}
+								onClick={() => toggleReviewerSelection(reviewer.id)}
 							>
 								{reviewer.name}
 							</div>
@@ -142,6 +130,4 @@ const Organizer = () => {
 			</div>
 		</div>
 	);
-};
-
-export default Organizer;
+}

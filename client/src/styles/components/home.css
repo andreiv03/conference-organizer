@@ -34,19 +34,19 @@
 	width: 250px;
 	height: 2.5rem;
 	padding: 0 0.5rem;
-	background: var(--background-one);
 	border: 1px solid var(--border);
 	border-top-left-radius: 0.25rem;
 	border-top-right-radius: 0.25rem;
+	background-color: var(--background-one);
 	font-size: 1rem;
 	text-align: center;
 }
 
 .home_content .fields .field button {
 	height: 2.5rem;
-	background: var(--foreground-one);
 	border-bottom-right-radius: 0.25rem;
 	border-bottom-left-radius: 0.25rem;
+	background-color: var(--foreground-one);
 	color: var(--background-one);
 	font-size: 0.875rem;
 	font-weight: 500;
@@ -56,5 +56,5 @@
 }
 
 .home_content .fields .field button:hover {
-	background: var(--foreground-two);
+	background-color: var(--foreground-two);
 }

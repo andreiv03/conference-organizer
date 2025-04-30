@@ -1,30 +1,38 @@
 import { useState } from "react";
-
-import "../styles/index.css";
 import "../styles/components/home.css";
 
-const Home = () => {
-	const [authorName, setAuthorName] = useState("");
-	const [organizerName, setOrganizerName] = useState("");
-	const [reviewerName, setReviewerName] = useState("");
+const userTypes = ["author", "organizer", "reviewer"];
 
-	const createUser = async (event, type, name) => {
+export default function Home() {
+	const [form, setForm] = useState({
+		author: "",
+		organizer: "",
+		reviewer: "",
+	});
+
+	const handleChange = (event) => {
+		const { id, value } = event.target;
+		setForm((prev) => ({ ...prev, [id]: value }));
+	};
+
+	const createUser = async (event, type) => {
 		event.preventDefault();
+		const name = form[type];
+
+		if (!name) {
+			return alert("Enter a name.");
+		}
 
 		try {
-			if (!name) return alert("Enter a name!");
-
 			const response = await fetch("http://localhost:8000/api/users/create", {
-				body: JSON.stringify({ type, name }),
-				headers: { "Content-Type": "application/json" },
 				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ type, name }),
 			});
+			const data = await response.json();
 
-			if (type === "author") setAuthorName("");
-			if (type === "organizer") setOrganizerName("");
-			if (type === "reviewer") setReviewerName("");
-
-			alert(await response.text());
+			setForm((prev) => ({ ...prev, [type]: "" }));
+			alert(data.message);
 		} catch (error) {
 			console.error(error);
 		}
@@ -33,49 +41,15 @@ const Home = () => {
 	return (
 		<div className="home_content">
 			<h1>Home</h1>
-
 			<div className="fields">
-				<div className="field">
-					<label htmlFor="authorName">Author name</label>
-					<input
-						id="authorName"
-						onChange={(event) => setAuthorName(event.target.value)}
-						type="text"
-						value={authorName}
-					/>
-					<button onClick={(event) => createUser(event, "author", authorName)}>
-						Create author
-					</button>
-				</div>
-
-				<div className="field">
-					<label htmlFor="organizerName">Organizer name</label>
-					<input
-						id="organizerName"
-						onChange={(event) => setOrganizerName(event.target.value)}
-						type="text"
-						value={organizerName}
-					/>
-					<button onClick={(event) => createUser(event, "organizer", organizerName)}>
-						Create organizer
-					</button>
-				</div>
-
-				<div className="field">
-					<label htmlFor="reviewerName">Reviewer name</label>
-					<input
-						id="reviewerName"
-						onChange={(event) => setReviewerName(event.target.value)}
-						type="text"
-						value={reviewerName}
-					/>
-					<button onClick={(event) => createUser(event, "reviewer", reviewerName)}>
-						Create reviewer
-					</button>
-				</div>
+				{userTypes.map((type) => (
+					<div className="field" key={type}>
+						<label htmlFor={type}>{`${type[0].toUpperCase()}${type.slice(1)} name`}</label>
+						<input id={type} onChange={handleChange} type="text" value={form[type]} />
+						<button onClick={(event) => createUser(event, type)}>Create {type}</button>
+					</div>
+				))}
 			</div>
 		</div>
 	);
-};
-
-export default Home;
+}

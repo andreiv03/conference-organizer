@@ -34,14 +34,14 @@ button {
 }
 
 body {
-	background: var(--background-two);
+	background-color: var(--background-two);
 }
 
 .header {
 	height: 4rem;
 	padding: 0 1rem;
-	background: var(--background-one);
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	background-color: var(--background-one);
 	display: flex;
 	justify-content: center;
 	align-items: center;

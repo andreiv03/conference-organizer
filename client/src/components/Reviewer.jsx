@@ -1,86 +1,95 @@
 import { useEffect, useState } from "react";
-
-import "../styles/index.css";
 import "../styles/components/reviewer.css";
 
-const Reviewer = () => {
+export default function Reviewer() {
 	const [reviewers, setReviewers] = useState([]);
 	const [selectedReviewer, setSelectedReviewer] = useState("");
-	const [reviewerArticles, setReviewerArticles] = useState([]);
-	const [selectedReviewerArticle, setSelectedReviewerArticle] = useState("");
+	const [articles, setArticles] = useState([]);
+	const [selectedArticleId, setSelectedArticleId] = useState("");
 	const [feedback, setFeedback] = useState("");
 
 	useEffect(() => {
-		const getReviewers = async () => {
+		const fetchReviewers = async () => {
 			try {
 				const response = await fetch("http://localhost:8000/api/users/reviewer");
-				const reviewers = await response.json();
-				setReviewers(reviewers);
+				const data = await response.json();
+				setReviewers(data);
 			} catch (error) {
 				console.error(error);
 			}
 		};
 
-		getReviewers();
+		fetchReviewers();
 	}, []);
 
 	useEffect(() => {
-		if (!selectedReviewer) return setReviewerArticles([]);
+		if (!selectedReviewer) {
+			return setArticles([]);
+		}
 
-		const getReviewerArticles = async () => {
+		const fetchArticles = async () => {
 			try {
 				const response = await fetch("http://localhost:8000/api/articles");
-				const articles = await response.json();
-				setReviewerArticles(
-					articles.filter(
-						(article) =>
-							(article.reviewerOne == selectedReviewer ||
-								article.reviewerTwo == selectedReviewer) &&
-							article.status === "PENDING",
-					),
+				const data = await response.json();
+
+				const filtered = data.filter(
+					(article) =>
+						(article.reviewerOne == selectedReviewer || article.reviewerTwo == selectedReviewer) &&
+						article.status === "PENDING",
 				);
+
+				setArticles(filtered);
 			} catch (error) {
 				console.error(error);
 			}
 		};
 
-		getReviewerArticles();
+		fetchArticles();
 	}, [selectedReviewer]);
 
-	const approveArticle = async (id) => {
+	const approveArticle = async (articleId) => {
 		try {
 			const response = await fetch("http://localhost:8000/api/articles/approve", {
-				body: JSON.stringify({ id }),
-				headers: { "Content-Type": "application/json" },
 				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ articleId }),
 			});
+			const data = await response.json();
 
-			alert(await response.text());
+			setArticles((prev) => prev.filter((article) => article.id !== articleId));
+			alert(data.message);
 		} catch (error) {
 			console.error(error);
 		}
 	};
 
 	const submitFeedback = async () => {
-		try {
-			if (!feedback) return alert("Enter feedback!");
+		if (!feedback) {
+			return alert("Enter feedback.");
+		}
 
+		const article = articles.find((article) => article.id == selectedArticleId);
+		if (!article) {
+			return alert("Invalid article selected.");
+		}
+
+		try {
 			const response = await fetch("http://localhost:8000/api/feedback/submit", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					articleId: selectedReviewerArticle,
-					authorId: reviewerArticles.find((article) => article.id == selectedReviewerArticle)
-						.authorId,
+					articleId: article.id,
+					authorId: article.authorId,
 					feedback,
 				}),
-				headers: { "Content-Type": "application/json" },
-				method: "POST",
 			});
+			const data = await response.json();
 
 			setSelectedReviewer("");
-			setSelectedReviewerArticle("");
+			setSelectedArticleId("");
 			setFeedback("");
 
-			alert(await response.text());
+			alert(data.message);
 		} catch (error) {
 			console.error(error);
 		}
@@ -106,16 +115,16 @@ const Reviewer = () => {
 					</select>
 				</div>
 
-				{reviewerArticles.length > 0 ? (
+				{articles.length > 0 ? (
 					<>
 						<div className="field">
 							<select
 								id="reviewerArticle"
-								onChange={(event) => setSelectedReviewerArticle(event.target.value)}
-								value={selectedReviewerArticle}
+								onChange={(event) => setSelectedArticleId(event.target.value)}
+								value={selectedArticleId}
 							>
 								<option value="">Select an article</option>
-								{reviewerArticles.map((article) => (
+								{articles.map((article) => (
 									<option key={article.id} value={article.id}>
 										{article.articleName}
 									</option>
@@ -123,7 +132,7 @@ const Reviewer = () => {
 							</select>
 						</div>
 
-						{selectedReviewerArticle ? (
+						{selectedArticleId ? (
 							<>
 								<div className="field">
 									<label htmlFor="feedback">Feedback</label>
@@ -142,9 +151,9 @@ const Reviewer = () => {
 			</div>
 
 			<div className="articles">
-				{reviewerArticles.length > 0 ? <h2>Articles</h2> : null}
+				{articles.length > 0 ? <h2>Articles</h2> : null}
 
-				{reviewerArticles.map((article) => (
+				{articles.map((article) => (
 					<div className="article" key={article.id}>
 						<h3 className="name">{article.articleName}</h3>
 						<button onClick={() => approveArticle(article.id)}>Approve</button>
@@ -153,6 +162,4 @@ const Reviewer = () => {
 			</div>
 		</div>
 	);
-};
-
-export default Reviewer;
+}

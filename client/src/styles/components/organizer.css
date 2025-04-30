@@ -35,7 +35,7 @@
 	width: 250px;
 	height: 2.5rem;
 	padding: 0 0.5rem;
-	background: var(--background-one);
+	background-color: var(--background-one);
 	border: 1px solid var(--border);
 	border-radius: 0.25rem;
 	font-size: 1rem;
@@ -62,9 +62,9 @@
 .organizer_content .fields .field .reviewers .reviewer {
 	height: 2.5rem;
 	padding: 0 0.5rem;
-	background: var(--background-one);
 	border: 1px solid var(--border);
 	border-radius: 0.25rem;
+	background-color: var(--background-one);
 	font-size: 1rem;
 	display: flex;
 	justify-content: center;
@@ -73,14 +73,14 @@
 }
 
 .organizer_content .fields .field .reviewers .reviewer.selected {
-	background: var(--foreground-one);
+	background-color: var(--foreground-one);
 	color: var(--background-one);
 }
 
 .organizer_content .fields button {
 	height: 2.5rem;
-	background: var(--foreground-one);
 	border-radius: 0.25rem;
+	background-color: var(--foreground-one);
 	color: var(--background-one);
 	font-size: 0.875rem;
 	font-weight: 500;
@@ -90,7 +90,7 @@
 }
 
 .organizer_content .fields button:hover {
-	background: var(--foreground-two);
+	background-color: var(--foreground-two);
 }
 
 .organizer_content .articles {
